@@ -113,16 +113,16 @@ jobs:
         with:
           version: ${{ env.GCC_VERSION }}
 
-      - name: Setup GCC (cross compile x86-aarch62)
-        if: matrix.cross-compile == 'x86-aarch62' && steps.setup-gcc.outcome != 'success'
+      - name: Setup GCC (cross compile x86-aarch64)
+        if: matrix.cross-compile == 'x86-aarch64' && steps.setup-gcc.outcome != 'success'
         run: |
           wget https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
           tar xf $(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
           rm $(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
           echo PATH=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin:$PATH >> $GITHUB_ENV
-          echo CC=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-gcc >> $GITHUB_ENV
-          echo CXX=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-g++ >> $GITHUB_ENV
-          echo AR=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-ar >> $GITHUB_ENV
+          echo CC=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnueabihf-gcc >> $GITHUB_ENV
+          echo CXX=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnueabihf-g++ >> $GITHUB_ENV
+          echo AR=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnueabihf-ar >> $GITHUB_ENV
 
       - name: Setup GCC (cross compile x86-aarch32)
         if: matrix.cross-compile == 'x86-aarch32' && steps.setup-gcc.outcome != 'success'
