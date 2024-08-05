@@ -44,7 +44,7 @@ jobs:
             cross-compile: x86-aarch32
             build: >
               apt-get -y update && apt-get -y install ninja-build &&
-              export CMAKE_GENERATE_OPTIONS="
+              CMAKE_GENERATE_OPTIONS="
                 -D CMAKE_TOOLCHAIN_FILE=$(pwd)/onnxruntime/cmake/linux_arm32_crosscompile_toolchain.cmake
                 -D onnxruntime_ENABLE_CPUINFO=OFF
                 -D PYTHON_EXECUTABLE=/usr/bin/python3
