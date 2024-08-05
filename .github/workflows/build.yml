@@ -30,11 +30,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        cross-compile: [ false ]
         include:
           - target: linux-aarch64-static_lib
-            runs-on: buildjet-4vcpu-ubuntu-2204-arm
-            cross-compile: false
+            runs-on: ubuntu-22.04
+            cross-compile: x86-aarch64
             build: >
+              CMAKE_OPTIONS="-D CMAKE_TOOLCHAIN_FILE=$(pwd)/onnxruntime/cmake/linux_arm64_crosscompile_toolchain.cmake -D onnxruntime_ENABLE_CPUINFO=OFF -D CMAKE_CXX_COMPILER=$CXX -D CMAKE_C_COMPILER=$CC
               PARALLEL_JOB_COUNT=2
               ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
@@ -43,25 +45,22 @@ jobs:
             runs-on: ubuntu-22.04
             cross-compile: x86-aarch32
             build: >
-              CMAKE_OPTIONS="-D CMAKE_TOOLCHAIN_FILE=$(pwd)/onnxruntime/cmake/linux_arm32_crosscompile_toolchain.cmake -D onnxruntime_ENABLE_CPUINFO=OFF -D PYTHON_EXECUTABLE=/usr/bin/python3 -D CMAKE_CXX_COMPILER=$CXX -D CMAKE_C_COMPILER=$CC" 
+              CMAKE_OPTIONS="-D CMAKE_TOOLCHAIN_FILE=$(pwd)/onnxruntime/cmake/linux_arm32_crosscompile_toolchain.cmake -D onnxruntime_ENABLE_CPUINFO=OFF -D CMAKE_CXX_COMPILER=$CXX -D CMAKE_C_COMPILER=$CC" 
               ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: linux-x64-static_lib
             runs-on: ubuntu-22.04
-            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: osx-arm64-static_lib
             runs-on: macos-13-xlarge
-            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: osx-universal2-static_lib
             runs-on: macos-13-xlarge
-            cross-compile: false
             build: >
               CMAKE_OPTIONS="-D CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
               ./build-static_lib.sh
@@ -69,25 +68,21 @@ jobs:
 
           - target: osx-x86_64-static_lib
             runs-on: macos-13
-            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: win-x64-static_lib
             runs-on: windows-2022
-            cross-compile: false
             build: ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
           - target: wasm-static_lib
             runs-on: ubuntu-22.04
-            cross-compile: false
             build: ./build-wasm-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: wasm-static_lib-simd
             runs-on: ubuntu-22.04
-            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_simd"
               ./build-wasm-static_lib.sh
@@ -95,7 +90,6 @@ jobs:
 
           - target: wasm-static_lib-threads
             runs-on: ubuntu-22.04
-            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_threads"
               ./build-wasm-static_lib.sh
@@ -103,7 +97,6 @@ jobs:
 
           - target: wasm-static_lib-simd-threads
             runs-on: ubuntu-22.04
-            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_simd --enable_wasm_threads"
               ./build-wasm-static_lib.sh
@@ -119,7 +112,18 @@ jobs:
         uses: egor-tensin/setup-gcc@v1
         with:
           version: ${{ env.GCC_VERSION }}
-        
+
+      - name: Setup GCC (cross compile x86-aarch62)
+        if: matrix.cross-compile == 'x86-aarch62' && steps.setup-gcc.outcome != 'success'
+        run: |
+          wget https://developer.arm.com/-/media/Files/downloads/gnu/13.3.rel1/binrel/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
+          tar xf $(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
+          rm $(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
+          echo PATH=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin:$PATH >> $GITHUB_ENV
+          echo CC=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-gcc >> $GITHUB_ENV
+          echo CXX=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-g++ >> $GITHUB_ENV
+          echo AR=$(pwd)/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-linux-gnu/bin/arm-none-linux-gnueabihf-ar >> $GITHUB_ENV
+
       - name: Setup GCC (cross compile x86-aarch32)
         if: matrix.cross-compile == 'x86-aarch32' && steps.setup-gcc.outcome != 'success'
         run: |
