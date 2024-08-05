@@ -2,6 +2,8 @@
 
 set -e
 
+echo $CMAKE_GENERATE_OPTIONS
+
 CROSS_COMPILE=${CROSS_COMPILE:=false}
 SOURCE_DIR=${SOURCE_DIR:=static_lib}
 BUILD_DIR=${BUILD_DIR:=build/static_lib}
