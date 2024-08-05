@@ -121,14 +121,13 @@ jobs:
       - name: Setup GCC (cross compile x86-aarch32)
         if: matrix.cross-compile == 'x86-aarch32' && steps.setup-gcc.outcome != 'success'
         run: |
-          cd /
           wget https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
-          tar xf /gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
-          rm /gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
-          echo PATH=/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin:$PATH >> $GITHUB_ENV
-          echo CC=/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc >> $GITHUB_ENV
-          echo CXX=/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-g++ >> $GITHUB_ENV
-          echo AR=/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-ar >> $GITHUB_ENV
+          tar xf $(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
+          rm $(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf.tar.xz
+          echo PATH=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin:$PATH >> $GITHUB_ENV
+          echo CC=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-gcc >> $GITHUB_ENV
+          echo CXX=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-g++ >> $GITHUB_ENV
+          echo AR=$(pwd)/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-ar >> $GITHUB_ENV
 
       - name: Setup CMake
         uses: lukka/get-cmake@latest
