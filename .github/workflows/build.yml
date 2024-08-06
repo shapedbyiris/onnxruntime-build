@@ -30,7 +30,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cross-compile: [ false ]
         include:
           - target: linux-aarch64-static_lib
             runs-on: ubuntu-22.04
@@ -51,16 +50,19 @@ jobs:
 
           - target: linux-x64-static_lib
             runs-on: ubuntu-22.04
+            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: osx-arm64-static_lib
             runs-on: macos-13-xlarge
+            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: osx-universal2-static_lib
             runs-on: macos-13-xlarge
+            cross-compile: false
             build: >
               CMAKE_OPTIONS="-D CMAKE_OSX_ARCHITECTURES=arm64;x86_64"
               ./build-static_lib.sh
@@ -68,21 +70,25 @@ jobs:
 
           - target: osx-x86_64-static_lib
             runs-on: macos-13
+            cross-compile: false
             build: ./build-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: win-x64-static_lib
             runs-on: windows-2022
+            cross-compile: false
             build: ./build-static_lib.sh
             post-build: 7z a $ARCHIVE_DIR/$ARCHIVE_NAME.zip $OUTPUT_DIR/*
 
           - target: wasm-static_lib
             runs-on: ubuntu-22.04
+            cross-compile: false
             build: ./build-wasm-static_lib.sh
             post-build: tar -czvf $ARCHIVE_DIR/$ARCHIVE_NAME.tgz -C $OUTPUT_DIR .
 
           - target: wasm-static_lib-simd
             runs-on: ubuntu-22.04
+            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_simd"
               ./build-wasm-static_lib.sh
@@ -90,6 +96,7 @@ jobs:
 
           - target: wasm-static_lib-threads
             runs-on: ubuntu-22.04
+            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_threads"
               ./build-wasm-static_lib.sh
@@ -97,6 +104,7 @@ jobs:
 
           - target: wasm-static_lib-simd-threads
             runs-on: ubuntu-22.04
+            cross-compile: false
             build: >
               BUILD_OPTIONS="--enable_wasm_simd --enable_wasm_threads"
               ./build-wasm-static_lib.sh

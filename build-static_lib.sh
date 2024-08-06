@@ -2,8 +2,6 @@
 
 set -e
 
-echo "THIS IS THE CMAKE OPTIONS ${CMAKE_OPTIONS}" $CMAKE_OPTIONS
-
 CROSS_COMPILE=${CROSS_COMPILE:=false}
 SOURCE_DIR=${SOURCE_DIR:=static_lib}
 BUILD_DIR=${BUILD_DIR:=build/static_lib}
